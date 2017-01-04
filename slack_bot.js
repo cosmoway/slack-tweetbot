@@ -87,6 +87,16 @@ controller.hears(['([\n\r]|.)*'], 'direct_message,direct_mention,mention', funct
 
     controller.storage.users.get(message.user, function(err, user) {
         bot.reply(message, text);
+
+        bot.api.reactions.add({
+            timestamp: message.ts,
+            channel: message.channel,
+            name: 'twitter',
+        }, function(err, res) {
+            if (err) {
+                bot.botkit.log('Failed to add emoji reaction :(', err);
+            }
+        });
     });
 
 });
