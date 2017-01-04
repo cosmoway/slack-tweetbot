@@ -91,7 +91,9 @@ var client = new Twitter({
 controller.hears(['([\n\r]|.)*'], 'direct_message,direct_mention,mention', function(bot, message) {
 
     var text = message.match[0];
-    text = text.replace(/<?@[a-z0-9.\-_]+>?[: ]*/gi, '');
+    text = text
+        .replace(/<(.+?)>/g, '$1')
+        .replace(/@[A-Za-z0-9.\-_]+[: ]*/gi, '');
 
     controller.storage.users.get(message.user, function(err, user) {
         client.post('statuses/update', {status: text},  function(error, tweet, response) {
