@@ -80,7 +80,15 @@ var bot = controller.spawn({
     token: process.env.token
 }).startRTM();
 
+controller.hears(['(.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
 
+    var text = message.match[1];
+    controller.storage.users.get(message.user, function(err, user) {
+        bot.reply(message, text);
+    });
+
+});
+/*
 controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', function(bot, message) {
 
     bot.api.reactions.add({
@@ -244,3 +252,5 @@ function formatUptime(uptime) {
     uptime = uptime + ' ' + unit;
     return uptime;
 }
+
+*/
