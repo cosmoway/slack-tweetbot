@@ -94,8 +94,6 @@ controller.hears(['([\n\r]|.)*'], 'direct_message,direct_mention,mention', funct
     text = text.replace(/<?@[a-z0-9.\-_]+>?[: ]*/gi, '');
 
     controller.storage.users.get(message.user, function(err, user) {
-        bot.reply(message, text);
-
         client.post('statuses/update', {status: text},  function(error, tweet, response) {
             if (error) {
                 bot.botkit.log('Failed to tweet :(', error);
