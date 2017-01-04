@@ -80,6 +80,14 @@ var bot = controller.spawn({
     token: process.env.token
 }).startRTM();
 
+var Twitter = require('twitter');
+var client = new Twitter({
+    consumer_key        : process.env.twitter_consumer_key || '',
+    consumer_secret     : process.env.twitter_consumer_secret || '',
+    access_token_key    : process.env.twitter_access_token_key || '',
+    access_token_secret : process.env.twitter_access_token_secret || ''
+});
+
 controller.hears(['([\n\r]|.)*'], 'direct_message,direct_mention,mention', function(bot, message) {
 
     var text = message.match[0];
@@ -88,15 +96,34 @@ controller.hears(['([\n\r]|.)*'], 'direct_message,direct_mention,mention', funct
     controller.storage.users.get(message.user, function(err, user) {
         bot.reply(message, text);
 
-        bot.api.reactions.add({
-            timestamp: message.ts,
-            channel: message.channel,
-            name: 'twitter',
-        }, function(err, res) {
-            if (err) {
-                bot.botkit.log('Failed to add emoji reaction :(', err);
+        client.post('statuses/update', {status: text},  function(error, tweet, response) {
+            if (error) {
+                bot.botkit.log('Failed to tweet :(', error);
+            } else {
+                bot.api.reactions.add({
+                    timestamp: message.ts,
+                    channel: message.channel,
+                    name: 'twitter'
+                }, function (err, res) {
+                    if (err) {
+                        bot.botkit.log('Failed to add emoji reaction :(', err);
+                    }
+                });
             }
         });
+
+        //
+        // twitter_bot.updateStatus(text, function (data) {
+        //     bot.api.reactions.add({
+        //         timestamp: message.ts,
+        //         channel: message.channel,
+        //         name: 'twitter',
+        //     }, function(err, res) {
+        //         if (err) {
+        //             bot.botkit.log('Failed to add emoji reaction :(', err);
+        //         }
+        //     });
+        // });
     });
 
 });
