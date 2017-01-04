@@ -83,6 +83,8 @@ var bot = controller.spawn({
 controller.hears(['(.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
 
     var text = message.match[1];
+    text = text.replace(/@[a-z0-9.\-_]+[: ]*/gi, '');
+
     controller.storage.users.get(message.user, function(err, user) {
         bot.reply(message, text);
     });
